@@ -1,50 +1,27 @@
 package org.example;
 
-import java.util.Stack;
+import java.util.Deque;
 
 public class Calculator {
 
-    private final Stack<Double> operands = new Stack<>();
-    private final Stack<OperatorEnum> operators = new Stack<>();
+    private final Deque<Double> operands;
+    private final Deque<OperatorEnum> operators;
 
-    public Double calculate(final String input) {
-        String[] expression = stripString(input);
-        interpret(expression);
+    public Calculator(Deque<Double> operands, Deque<OperatorEnum> operators) {
+        this.operands = operands;
+        this.operators = operators;
+    }
 
+    public Double calculate() {
         while (operands.size() != 1) {
-            OperatorEnum operator = operators.pop();
-            Double operand1 = operands.pop();
-            Double operand2 = operands.pop();
+            OperatorEnum operator = operators.removeFirst();
+            Double operand1 = operands.removeFirst();
+            Double operand2 = operands.removeFirst();
 
-            operands.push(operator.calculate(operand1, operand2));
+            operands.addFirst(operator.calculate(operand1, operand2));
+
         }
-        return operands.get(0);
-    }
-
-    private String[] stripString(final String input) {
-        String[] expression = input.split("\\s+");
-
-        return expression;
-    }
-
-    private void interpret(final String[] expression) {
-        for (int i = 0; i < expression.length; i++){
-            if (i % 2 == 0)
-                operands.push(checkOperand(expression[i]));
-            else operators.push(checkOperator(expression[i]));
-        }
-    }
-
-    private Double checkOperand(final String operand) {
-        try {
-            return Double.parseDouble(operand);
-        } catch (NumberFormatException ex) {
-            throw new RuntimeException(String.format("%s는 올바르지 않은 숫자입니다.", operand));
-        }
-    }
-
-    private OperatorEnum checkOperator(final String operator) {
-        return OperatorEnum.find(operator).orElseThrow(() -> new RuntimeException(String.format("%s는 지원하지 않는 연산자입니다.", operator)));
+        return operands.remove();
     }
 
 }

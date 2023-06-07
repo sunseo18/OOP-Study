@@ -22,7 +22,7 @@ public enum OperatorEnum {
             return operand1 * operand2;
         }
     },
-    DEVIDE("/") {
+    DIVIDE("/") {
         @Override
         Double calculate(Double operand1, Double operand2) {
             return operand1 / operand2;
@@ -31,13 +31,14 @@ public enum OperatorEnum {
 
     abstract Double calculate(Double operand1, Double operand2);
 
-    private String operator;
+    private final String operator;
 
     OperatorEnum(String operator) {
         this.operator = operator;
     }
 
-    static final Optional<OperatorEnum> find(String op) {
-        return Arrays.stream(values()).filter(e -> e.operator.equals(op)).findFirst();
+    static OperatorEnum find(String op) {
+        return Arrays.stream(values()).filter(e -> e.operator.equals(op)).findFirst()
+            .orElseThrow(() -> new NoSuchOperatorException(op));
     }
 }
